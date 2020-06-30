@@ -1,0 +1,1 @@
+# lolspell.gg
