@@ -35,7 +35,7 @@ function App() {
         userInfo = userInfoResult.data;
       } catch (error) {
         if (error.response) {
-          if (error.response.status == 404)
+          if (error.response.status === 404)
             setErrorMessage("존재하지 않는 유저 입니다.");
         }
         setLoading(false);
@@ -53,14 +53,14 @@ function App() {
         activeGameInfo = activeGameResult.data;
       } catch (error) {
         if (error.response) {
-          if (error.response.status == 404)
+          if (error.response.status === 404)
             setErrorMessage("진행 중인 게임이 없습니다.");
         }
         setLoading(false);
         return;
       }
 
-      if (activeGameInfo["mapId"] != 11) return false;
+      if (activeGameInfo["mapId"] !== 11) return false;
 
       let myTeamId;
       const participants = activeGameInfo["participants"];
@@ -75,7 +75,7 @@ function App() {
       let enemyDatas = [];
       for (let i = 0; i < participants.length; i++) {
         const participant = participants[i];
-        if (participant["teamId"] != myTeamId) enemyDatas.push(participant);
+        if (participant["teamId"] !== myTeamId) enemyDatas.push(participant);
       }
 
       let enemyInfos = [];
@@ -87,21 +87,27 @@ function App() {
         const champInfo = champInfos[champId];
         const champImage = `${cdnUrlPrefix}/img/champion/${champInfo.id}.png`;
 
-        const spell1 = spellInfos[enemy["spell1Id"]];
+        const spell1Id = enemy["spell1Id"];
+        const spell1 = spellInfos[spell1Id];
         const spell1Name = spell1.name;
         const spell1Image = `${cdnUrlPrefix}/img/spell/${spell1.id}.png`;
 
-        const spell2 = spellInfos[enemy["spell2Id"]];
+        const spell2Id = enemy["spell2Id"];
+        const spell2 = spellInfos[spell2Id];
         const spell2Name = spell2.name;
         const spell2Image = `${cdnUrlPrefix}/img/spell/${spell2.id}.png`;
 
         const info = {
           name: name,
           champImage: champImage,
+          spell1Id: spell1Id,
           spell1Name: spell1Name,
           spell1Image: spell1Image,
+          spell1Colldown: 0,
+          spell2Id: spell2Id,
           spell2Name: spell2Name,
           spell2Image: spell2Image,
+          spell2Colldown: 0,
         };
         enemyInfos.push(info);
       }
@@ -145,16 +151,18 @@ function App() {
     return <div>로딩 중</div>;
   }
 
-  if (enemies.length == 0) {
+  if (enemies.length === 0) {
     return (
       <div>
-        <input
-          value={targetName}
-          onChange={onTargetNameChange}
-          placeholder="닉네임을 입력해주세요."
-        />
-        <button onClick={onSearchClick}>찾기</button>
-        {errorMessage}
+        <form onSubmit={onSearchClick}>
+          <input
+            value={targetName}
+            onChange={onTargetNameChange}
+            placeholder="닉네임을 입력해주세요."
+          />
+          <button type="submit">찾기</button>
+          {errorMessage}
+        </form>
       </div>
     );
   }
@@ -164,10 +172,10 @@ function App() {
       <header className="App-header">
         {enemies.map((enemy) => (
           <div>
-            <img src={enemy.champImage} />
+              <img src={enemy.champImage} alt="alt" />
             <br />
-            <img src={enemy.spell1Image} />
-            <img src={enemy.spell2Image} />
+              <img src={enemy.spell1Image} alt="alt" />
+              <img src={enemy.spell2Image} alt="alt" />
           </div>
         ))}
       </header>
